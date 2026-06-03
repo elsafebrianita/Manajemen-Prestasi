@@ -108,7 +108,7 @@
 <body>
 
     <div class="login-card">
-        <h2>Selamat Datang</h2>
+        <h2>Selamat Datang COK</h2>
         <p>Silakan login untuk masuk ke sistem</p>
 
         @if(session('success'))
