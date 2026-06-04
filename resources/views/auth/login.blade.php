@@ -111,6 +111,16 @@
         <h2>Selamat Datang</h2>
         <p>Silakan login untuk masuk ke sistem</p>
 
+        @if(session('logout_success'))
+            <div style="background:linear-gradient(135deg,#e0f2fe,#bae6fd); border:1px solid #7dd3fc; padding:18px 16px; border-radius:12px; margin-bottom:16px; color:#0369a1; font-size:13px; line-height:1.6; text-align:left; display:flex; gap:12px; align-items:flex-start;">
+                <span style="font-size:22px; flex-shrink:0;">👋</span>
+                <div>
+                    <strong style="display:block; margin-bottom:4px;">Logout Berhasil!</strong>
+                    {{ session('logout_success') }}
+                </div>
+            </div>
+        @endif
+
         @if(session('success'))
             <div style="background:linear-gradient(135deg,#d1fae5,#a7f3d0); border:1px solid #6ee7b7; padding:18px 16px; border-radius:12px; margin-bottom:16px; color:#065f46; font-size:13px; line-height:1.6; text-align:left; display:flex; gap:12px; align-items:flex-start;">
                 <span style="font-size:22px; flex-shrink:0;">✅</span>

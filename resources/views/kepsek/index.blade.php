@@ -72,6 +72,51 @@
         .btn-confirm { flex: 1; padding: 14px; border-radius: 14px; border: none; font-size: 14px; font-weight: 800; cursor: pointer; }
         .btn-cancel { background: #f1f5f9; color: #64748b; flex: 1; padding: 14px; border-radius: 14px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; }
         .alert-success { background: #ecfdf5; color: #059669; padding: 16px 22px; border-radius: 14px; font-weight: 700; margin-bottom: 25px; }
+
+        /* Dropdown Styles */
+        .dropdown-menu-box.show {
+            display: flex !important;
+        }
+        .dropdown-trigger:hover {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        .btn-signout:hover {
+            background: #f9fafb !important;
+            border-color: #cbd5e1 !important;
+            color: #111827 !important;
+        }
+        .dropdown-menu-box::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            border-left: 1px solid #e2e8f0;
+            transform: rotate(45deg);
+        }
+        
+        /* Avatar & profile layout style helper for index */
+        .avatar {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: linear-gradient(135deg, #14b8a6, #0f766e);
+            display: flex; align-items: center; justify-content: center; color: white;
+            font-weight: 800; font-size: 18px; overflow: hidden;
+            position: relative; cursor: pointer; transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(20, 184, 166, 0.2);
+        }
+        .avatar img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .avatar-hover {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: 0.2s;
+        }
+        .avatar-hover i { color: white; font-size: 14px; }
+        .avatar:hover .avatar-hover { opacity: 1; }
     </style>
 </head>
 <body>
@@ -100,19 +145,45 @@
     <a href="/admin/publikasi" class="menu-item"><i class="fas fa-stamp"></i> Verifikasi Publikasi</a>
         <a href="/laporan" class="menu-item"><i class="fas fa-file-pdf"></i> Lihat Laporan</a>
     </div>
-    <div class="sidebar-footer">
-        <a href="{{ route('logout') }}" class="logout-btn" onclick="event.preventDefault(); document.getElementById('logout-form-ks').submit();">
-            <i class="fas fa-sign-out-alt"></i> Keluar
-        </a>
-        <form id="logout-form-ks" action="{{ route('logout') }}" method="GET" style="display:none;">@csrf</form>
-    </div>
 </aside>
 
 <!-- === AWAL KONTEN UTAMA === -->
 <main class="main">
     <div class="topbar">
         <h2><i class="fas fa-crown" style="color: var(--teal);"></i> Dashboard Kepala Sekolah</h2>
-        <div class="kepsek-badge"><i class="fas fa-user-tie"></i> {{ auth()->user()->name }}</div>
+        <div class="user-profile" style="position: relative; cursor: pointer; display: flex; align-items: center; gap: 15px;" onclick="toggleUserDropdown(event)">
+            <div class="user-info">
+                <div class="user-name" style="display: flex; align-items: center; gap: 6px;">
+                    {{ auth()->user()->name }} 
+                    <i class="fas fa-caret-down" style="font-size: 12px; color: var(--text-muted); transition: transform 0.2s;"></i>
+                </div>
+                <div class="user-role" style="font-size: 11px; color: var(--teal); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Kepala Sekolah</div>
+            </div>
+            <div class="avatar" onclick="event.stopPropagation(); document.getElementById('topbar-upload-foto').click()" title="Klik untuk mengubah foto profil">
+                @if(auth()->user()->foto)
+                    <img src="{{ asset('uploads/profil/' . auth()->user()->foto) }}" alt="Foto Profil">
+                @else
+                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                @endif
+                <div class="avatar-hover">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
+            <!-- Hidden Topbar Photo Upload Form -->
+            <form id="topbar-foto-form" action="{{ route('update-foto-profil') }}" method="POST" enctype="multipart/form-data" style="display: none;">
+                @csrf
+                <input type="file" id="topbar-upload-foto" name="foto" accept="image/*" onchange="document.getElementById('topbar-foto-form').submit()">
+            </form>
+
+            <!-- Dropdown Menu Box -->
+            <div class="dropdown-menu-box" id="userDropdownMenu" style="display: none; position: absolute; right: 0; top: calc(100% + 15px); background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05); width: 320px; padding: 16px; z-index: 1000; align-items: center; justify-content: space-between; cursor: default;" onclick="event.stopPropagation()">
+                <span class="dropdown-user-name" style="font-size: 14px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">{{ auth()->user()->name }}</span>
+                <a href="{{ route('logout') }}" class="btn-signout" onclick="event.preventDefault(); document.getElementById('dropdown-logout-form').submit();">
+                    Sign out
+                </a>
+                <form id="dropdown-logout-form" action="{{ route('logout') }}" method="GET" style="display: none;">@csrf</form>
+            </div>
+        </div>
     </div>
 
     <div class="content">
@@ -291,6 +362,23 @@
 
     document.getElementById('modalOverlay').addEventListener('click', function(e) {
         if (e.target === this) closeModal();
+    });
+
+    function toggleUserDropdown(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('userDropdownMenu');
+        menu.classList.toggle('show');
+    }
+
+    // Close dropdown when clicking anywhere outside
+    window.addEventListener('click', function(e) {
+        const menu = document.getElementById('userDropdownMenu');
+        if (menu && menu.classList.contains('show')) {
+            const trigger = document.querySelector('.user-profile');
+            if (!menu.contains(e.target) && (!trigger || !trigger.contains(e.target))) {
+                menu.classList.remove('show');
+            }
+        }
     });
 </script>
 </body>

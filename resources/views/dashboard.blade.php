@@ -98,6 +98,13 @@
         }
 
         .sidebar-footer { padding: 20px 15px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .logout-btn {
+            display: flex; align-items: center; gap: 15px;
+            padding: 12px 15px; color: #f87171; text-decoration: none;
+            border-radius: 10px; font-weight: 500; transition: var(--transition);
+        }
+        .logout-btn i { width: 20px; font-size: 18px; text-align: center; }
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; transform: translateX(5px); }
 
         /* --- MAIN CONTENT --- */
         .main-wrapper { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; min-height: 100vh; }
@@ -229,6 +236,31 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 1024px) { .sidebar { transform: translateX(-100%); } .main-wrapper { margin-left: 0; } }
+        
+        /* Dropdown Styles */
+        .dropdown-menu-box.show {
+            display: flex !important;
+        }
+        .dropdown-trigger:hover {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        .btn-signout:hover {
+            background: #f9fafb !important;
+            border-color: #cbd5e1 !important;
+            color: #111827 !important;
+        }
+        .dropdown-menu-box::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            border-left: 1px solid #e2e8f0;
+            transform: rotate(45deg);
+        }
     </style>
 </head>
 <body>
@@ -333,24 +365,27 @@
                 </a>
             @endif
         </div>
-
+        @if(auth()->user()->akses_role === 'walikelas')
         <div class="sidebar-footer">
-            <a href="{{ route('logout') }}" class="menu-item" style="color: #ef4444;" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
+            <a href="{{ route('logout') }}" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
             </a>
-            <form id="logout-form" action="{{ route('logout') }}" method="GET" style="display: none;">@csrf</form>
         </div>
+        @endif
     </aside>
 
     <main class="main-wrapper">
         <header class="topbar">
             <div class="page-title">Dashboard</div>
-            <div class="user-profile">
+            <div class="user-profile" style="position: relative; cursor: pointer; display: flex; align-items: center; gap: 15px;" onclick="toggleUserDropdown(event)">
                 <div class="user-info">
-                    <div class="user-name">{{ $user->name }}</div>
+                    <div class="user-name" style="display: flex; align-items: center; gap: 6px;">
+                        {{ $user->name }} 
+                        <i class="fas fa-caret-down" style="font-size: 12px; color: var(--text-muted); transition: transform 0.2s;"></i>
+                    </div>
                     <div class="user-role">{{ $roleName }}</div>
                 </div>
-                <div class="avatar" onclick="document.getElementById('topbar-upload-foto').click()" title="Klik untuk mengubah foto profil">
+                <div class="avatar" onclick="event.stopPropagation(); document.getElementById('topbar-upload-foto').click()" title="Klik untuk mengubah foto profil">
                     @if($user->foto)
                         <img src="{{ asset('uploads/profil/' . $user->foto) }}" alt="Foto Profil">
                     @else
@@ -365,6 +400,15 @@
                     @csrf
                     <input type="file" id="topbar-upload-foto" name="foto" accept="image/*" onchange="document.getElementById('topbar-foto-form').submit()">
                 </form>
+
+                <!-- Dropdown Menu Box -->
+                <div class="dropdown-menu-box" id="userDropdownMenu" style="display: none; position: absolute; right: 0; top: calc(100% + 15px); background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05); width: 320px; padding: 16px; z-index: 1000; align-items: center; justify-content: space-between; cursor: default;" onclick="event.stopPropagation()">
+                    <span class="dropdown-user-name" style="font-size: 14px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">{{ $user->name }}</span>
+                    <a href="{{ route('logout') }}" class="btn-signout" onclick="event.preventDefault(); document.getElementById('dropdown-logout-form').submit();">
+                        Sign out
+                    </a>
+                    <form id="dropdown-logout-form" action="{{ route('logout') }}" method="GET" style="display: none;">@csrf</form>
+                </div>
             </div>
         </header>
 
@@ -1240,6 +1284,23 @@
                 targetContent.classList.add('active');
             }
         }
+
+        function toggleUserDropdown(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('userDropdownMenu');
+            menu.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking anywhere outside
+        window.addEventListener('click', function(e) {
+            const menu = document.getElementById('userDropdownMenu');
+            if (menu && menu.classList.contains('show')) {
+                const trigger = document.querySelector('.user-profile');
+                if (!menu.contains(e.target) && (!trigger || !trigger.contains(e.target))) {
+                    menu.classList.remove('show');
+                }
+            }
+        });
     </script>
 </body>
 </html>
