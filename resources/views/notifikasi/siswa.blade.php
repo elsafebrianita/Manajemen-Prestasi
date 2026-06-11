@@ -355,6 +355,13 @@
                         <span class="notif-time">{{ $notif->created_at->diffForHumans() }}</span>
                     </div>
                     <p class="notif-message">{{ $notif->message }}</p>
+                    @if(str_contains(strtolower($notif->message), 'bk') || str_contains(strtolower($notif->message), 'konsultasi') || $notif->type === 'Bimbingan BK' || $notif->type === 'Binaan BK')
+                        <div style="margin-bottom: 15px; margin-top: -5px;">
+                            <a href="/siswa/bimbingan" class="btn-read-all" style="font-size: 11px; padding: 6px 12px; background: var(--primary); color: white; border-color: var(--primary); height: auto; min-height: 0;">
+                                <i class="fas fa-comments"></i> Ajukan Konsultasi ke BK
+                            </a>
+                        </div>
+                    @endif
                     <div class="notif-sender">
                         <div class="sender-avatar">
                             {{ strtoupper(substr($notif->sender->name ?? 'W', 0, 1)) }}

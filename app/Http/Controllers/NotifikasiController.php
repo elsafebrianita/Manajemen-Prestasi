@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Notification;
 use App\Models\Siswa;
+use App\Models\KonsultasiBk;
+use App\Models\BimbinganBk;
 use Illuminate\Http\Request;
 
 class NotifikasiController extends Controller
@@ -210,5 +212,66 @@ class NotifikasiController extends Controller
         }
 
         return redirect()->back()->with('success', 'Semua notifikasi ditandai telah dibaca.');
+    }
+
+    // Halaman Bimbingan Konseling Siswa
+    public function siswaBimbingan()
+    {
+        if (auth()->user()->akses_role !== 'siswa') {
+            return redirect('/dashboard')->with('error', 'Akses ditolak.');
+        }
+
+        $siswa = Siswa::where('nis', auth()->user()->username)->first();
+        if (!$siswa) {
+            return redirect('/dashboard')->with('error', 'Data profil siswa tidak ditemukan.');
+        }
+
+        // Ambil riwayat pengajuan konsultasi
+        $pengajuans = KonsultasiBk::with('guru')
+            ->where('siswa_id', $siswa->id)
+            ->latest()
+            ->get();
+
+        // Ambil riwayat pembinaan BK resmi
+        $bimbingans = BimbinganBk::with('guru')
+            ->where('siswa_id', $siswa->id)
+            ->latest()
+            ->get();
+
+        return view('siswa.bimbingan', compact('siswa', 'pengajuans', 'bimbingans'));
+    }
+
+    // Simpan Pengajuan Konsultasi Siswa
+    public function siswaBimbinganStore(Request $request)
+    {
+        if (auth()->user()->akses_role !== 'siswa') {
+            return redirect('/dashboard')->with('error', 'Akses ditolak.');
+        }
+
+        $siswa = Siswa::where('nis', auth()->user()->username)->first();
+        if (!$siswa) {
+            return redirect('/dashboard')->with('error', 'Data profil siswa tidak ditemukan.');
+        }
+
+        $request->validate([
+            'tanggal_pengajuan' => 'required|date|after_or_equal:today',
+            'tipe_konsultasi' => 'required|string|in:akademik,non_akademik,disiplin,karir,lainnya',
+            'keluhan' => 'required|string|max:1000',
+        ], [
+            'tanggal_pengajuan.required' => 'Tanggal pengajuan wajib diisi.',
+            'tanggal_pengajuan.after_or_equal' => 'Tanggal pengajuan tidak boleh hari kemarin.',
+            'tipe_konsultasi.required' => 'Kategori bimbingan wajib dipilih.',
+            'keluhan.required' => 'Alasan atau keluhan bimbingan wajib diisi.',
+        ]);
+
+        KonsultasiBk::create([
+            'siswa_id' => $siswa->id,
+            'tanggal_pengajuan' => $request->tanggal_pengajuan,
+            'tipe_konsultasi' => $request->tipe_konsultasi,
+            'keluhan' => $request->keluhan,
+            'status' => 'pending',
+        ]);
+
+        return redirect()->back()->with('success', 'Pengajuan konsultasi berhasil dikirim ke Guru BK. Silakan pantau status pengajuan Anda.');
     }
 }

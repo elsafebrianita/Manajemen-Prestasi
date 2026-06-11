@@ -98,6 +98,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifikasi/riwayat', [NotifikasiController::class, 'riwayat']);
     Route::get('/notifikasi/siswa', [NotifikasiController::class, 'siswaIndex']);
     Route::post('/notifikasi/read-all', [NotifikasiController::class, 'markAllAsRead']);
+    Route::get('/siswa/bimbingan', [NotifikasiController::class, 'siswaBimbingan'])->name('siswa.bimbingan');
+    Route::post('/siswa/bimbingan/store', [NotifikasiController::class, 'siswaBimbinganStore'])->name('siswa.bimbingan.store');
     // =====================
     // KEPSEK
     // =====================
@@ -197,6 +199,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/pembinaan/store', [GuruBkController::class, 'storePembinaan'])->name('guru-bk.pembinaan.store');
         Route::get('/riwayat', [GuruBkController::class, 'riwayat'])->name('guru-bk.riwayat');
         Route::get('/bakat', [GuruBkController::class, 'bakat'])->name('guru-bk.bakat');
+        Route::post('/konsultasi/acc/{id}', [GuruBkController::class, 'accKonsultasi'])->name('guru-bk.konsultasi.acc');
     });
 
 });

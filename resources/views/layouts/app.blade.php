@@ -282,7 +282,8 @@
                 <a href="/prestasi/create" class="menu-item"><i class="fa-solid fa-plus-circle"></i> Input Prestasi Baru</a>
                 <a href="/prestasi/riwayat" class="menu-item"><i class="fa-solid fa-award"></i> Prestasi Saya</a>
                 <a href="/nilai-rapor" class="menu-item"><i class="fa-solid fa-school"></i> Nilai Rapor</a>
-                <a href="/hasil-bakat" class="menu-item"><i class="fa-solid fa-chart-pie"></i> KPI/SPI Saya</a>
+                <a href="/hasil-bakat" class="menu-item {{ request()->is('hasil-bakat') ? 'active' : '' }}"><i class="fa-solid fa-chart-pie"></i> KPI/SPI Saya</a>
+                <a href="/siswa/bimbingan" class="menu-item {{ request()->is('siswa/bimbingan*') ? 'active' : '' }}"><i class="fa-solid fa-user-shield"></i> Bimbingan Konseling</a>
                 <a href="/notifikasi/siswa" class="menu-item {{ request()->is('notifikasi/siswa') ? 'active' : '' }}"><i class="fa-solid fa-bell"></i> Notifikasi & Saran
                     @if($unreadNotifCount > 0)
                         <span style="background: #ef4444; color: white; border-radius: 50%; padding: 2px 7px; font-size: 10px; margin-left: auto; font-weight: 700;">{{ $unreadNotifCount }}</span>

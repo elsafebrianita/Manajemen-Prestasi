@@ -8,6 +8,7 @@ use App\Models\Prestasi;
 use App\Models\BimbinganBk;
 use App\Models\Kelas;
 use App\Models\Notification;
+use App\Models\KonsultasiBk;
 use Illuminate\Http\Request;
 
 class GuruBkController extends Controller
@@ -59,13 +60,20 @@ class GuruBkController extends Controller
             ->take(5)
             ->get();
 
+        // Pengajuan Konsultasi dari Siswa (aktif: pending atau diproses)
+        $pengajuanKonsultasi = KonsultasiBk::with(['siswa.kelasRel'])
+            ->where('status', '!=', 'selesai')
+            ->latest()
+            ->get();
+
         return view('guru_bk.dashboard', compact(
             'totalSiswa',
             'kpiTinggi',
             'kpiRendah',
             'butuhPembinaanCount',
             'daftarButuhPembinaan',
-            'riwayatTerbaru'
+            'riwayatTerbaru',
+            'pengajuanKonsultasi'
         ));
     }
 
@@ -178,12 +186,19 @@ class GuruBkController extends Controller
         $this->checkRole();
 
         $siswaId = $request->get('siswa_id');
+        $konsultasiId = $request->get('konsultasi_id');
         $siswas = Siswa::orderBy('nama')->get();
 
-        return view('guru_bk.pembinaan', compact('siswas', 'siswaId'));
+        if ($konsultasiId) {
+            $konsultasi = KonsultasiBk::find($konsultasiId);
+            if ($konsultasi && $konsultasi->status === 'pending') {
+                $konsultasi->update(['status' => 'diproses']);
+            }
+        }
+
+        return view('guru_bk.pembinaan', compact('siswas', 'siswaId', 'konsultasiId'));
     }
 
-    // Simpan Pembinaan Siswa
     public function storePembinaan(Request $request)
     {
         $this->checkRole();
@@ -197,6 +212,7 @@ class GuruBkController extends Controller
             'rekomendasi_lomba' => 'nullable|string|max:255',
             'rekomendasi_organisasi' => 'nullable|string|max:255',
             'rekomendasi_pengembangan' => 'nullable|string|max:255',
+            'konsultasi_id' => 'nullable|exists:konsultasi_bks,id',
         ], [
             'siswa_id.required' => 'Siswa wajib dipilih.',
             'tanggal.required' => 'Tanggal pembinaan wajib diisi.',
@@ -204,7 +220,7 @@ class GuruBkController extends Controller
             'catatan.required' => 'Catatan pembinaan wajib diisi.',
         ]);
 
-        BimbinganBk::create([
+        $bimbingan = BimbinganBk::create([
             'siswa_id' => $request->siswa_id,
             'guru_id' => auth()->id(),
             'tanggal' => $request->tanggal,
@@ -215,6 +231,17 @@ class GuruBkController extends Controller
             'rekomendasi_organisasi' => $request->rekomendasi_organisasi,
             'rekomendasi_pengembangan' => $request->rekomendasi_pengembangan,
         ]);
+
+        if ($request->filled('konsultasi_id')) {
+            $konsultasi = KonsultasiBk::find($request->konsultasi_id);
+            if ($konsultasi) {
+                $konsultasi->update([
+                    'status' => 'selesai',
+                    'guru_id' => auth()->id(),
+                    'bimbingan_bk_id' => $bimbingan->id,
+                ]);
+            }
+        }
 
         // Kirim Notifikasi ke Siswa
         $jenisFormatted = match($request->jenis_pembinaan) {
@@ -269,5 +296,43 @@ class GuruBkController extends Controller
         $kelas = Kelas::orderBy('nama_kelas')->get();
 
         return view('guru_bk.bakat', compact('siswas', 'kelas'));
+    }
+
+    // Persetujuan & Penjadwalan Bimbingan BK
+    public function accKonsultasi(Request $request, $id)
+    {
+        $this->checkRole();
+
+        $request->validate([
+            'tanggal_konsultasi' => 'required|date|after_or_equal:today',
+            'jam_konsultasi' => 'required|string|max:100',
+            'ruangan_konsultasi' => 'required|string|max:100',
+        ], [
+            'tanggal_konsultasi.required' => 'Tanggal bimbingan wajib diisi.',
+            'tanggal_konsultasi.after_or_equal' => 'Tanggal bimbingan tidak boleh hari kemarin.',
+            'jam_konsultasi.required' => 'Jam bimbingan wajib diisi.',
+            'ruangan_konsultasi.required' => 'Ruangan bimbingan wajib diisi.',
+        ]);
+
+        $konsul = KonsultasiBk::findOrFail($id);
+        $konsul->update([
+            'status' => 'disetujui',
+            'guru_id' => auth()->id(),
+            'tanggal_konsultasi' => $request->tanggal_konsultasi,
+            'jam_konsultasi' => $request->jam_konsultasi,
+            'ruangan_konsultasi' => $request->ruangan_konsultasi,
+        ]);
+
+        // Kirim Notifikasi ke Siswa
+        $tglFormatted = \Carbon\Carbon::parse($request->tanggal_konsultasi)->translatedFormat('d M Y');
+        Notification::create([
+            'siswa_id' => $konsul->siswa_id,
+            'from_user_id' => auth()->id(),
+            'type' => 'Bimbingan BK',
+            'message' => 'Pengajuan bimbingan/konsultasi Anda telah DISETUJUI oleh Guru BK. Jadwal: ' . $tglFormatted . ' pukul ' . $request->jam_konsultasi . ' di ' . $request->ruangan_konsultasi . '. Silakan datang tepat waktu.',
+            'is_read' => false,
+        ]);
+
+        return redirect()->back()->with('success', 'Pengajuan bimbingan berhasil disetujui dan dijadwalkan!');
     }
 }

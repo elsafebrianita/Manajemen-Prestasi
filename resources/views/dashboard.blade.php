@@ -1031,6 +1031,13 @@
                                             <small style="color: #94a3b8;">{{ $n->created_at->diffForHumans() }}</small>
                                         </div>
                                         <p style="font-size: 14px; color: #1e293b; line-height: 1.6; font-weight: 500;">{{ $n->message }}</p>
+                                        @if(str_contains(strtolower($n->message), 'bk') || str_contains(strtolower($n->message), 'konsultasi') || $n->type === 'Bimbingan BK' || $n->type === 'Binaan BK')
+                                            <div style="margin-top: 12px; margin-bottom: 12px;">
+                                                <a href="/siswa/bimbingan" style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: white; background-color: var(--primary); padding: 8px 16px; border-radius: 10px; text-decoration: none; transition: 0.3s;" onmouseover="this.style.backgroundColor='var(--primary-light)'" onmouseout="this.style.backgroundColor='var(--primary)'">
+                                                    <i class="fas fa-comments"></i> Ajukan Konsultasi ke BK
+                                                </a>
+                                            </div>
+                                        @endif
                                         <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed {{ $border }}; font-size: 12px; color: #64748b;">
                                             <i class="fas fa-user-edit"></i> Dari: {{ $n->sender->name }}
                                         </div>

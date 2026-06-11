@@ -32,6 +32,20 @@
         <form action="{{ route('guru-bk.pembinaan.store') }}" method="POST" style="margin: 0;">
             @csrf
 
+            @if(isset($konsultasiId))
+                <input type="hidden" name="konsultasi_id" value="{{ $konsultasiId }}">
+                @php
+                    $konsul = \App\Models\KonsultasiBk::find($konsultasiId);
+                @endphp
+                @if($konsul)
+                    <div style="background: #f0f9ff; border: 1px solid #bae6fd; padding: 15px; border-radius: 12px; margin-bottom: 22px; font-size: 13px; color: #0369a1; line-height: 1.5;">
+                        <i class="fas fa-info-circle"></i> <strong>Memproses Pengajuan Bimbingan:</strong><br>
+                        <span style="font-weight: 700; color: #0f766e;">Kategori:</span> {{ str_replace('_', ' ', ucfirst($konsul->tipe_konsultasi)) }}<br>
+                        <span style="font-weight: 700; color: #0f766e;">Keluhan Siswa:</span> "{{ $konsul->keluhan }}"
+                    </div>
+                @endif
+            @endif
+
             <!-- NAMA SISWA -->
             <div style="margin-bottom: 22px;">
                 <label for="siswa_id" style="display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 10px;">Nama Siswa</label>
