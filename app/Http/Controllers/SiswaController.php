@@ -102,7 +102,7 @@ class SiswaController extends Controller
             $this->processSiswaData($siswa);
         }
         
-        $data = Siswa::all();
+        $data = Siswa::with('penilaian')->get();
         return view('siswa.index', compact('data'));
     }
 

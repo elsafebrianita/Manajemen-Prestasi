@@ -76,6 +76,22 @@
             padding: 4px 12px; border-radius: 8px; font-weight: 700; font-size: 12px;
         }
 
+        .badge-bakat {
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 11px;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .bakat-akademik-umum { background: #ccfbf1; color: #0f766e; border: 1px solid #99f6e4; }
+        .bakat-akademik-spesifik { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .bakat-kepemimpinan { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .bakat-seni-olahraga { background: #fce7f3; color: #be185d; border: 1px solid #fbcfe8; }
+        .bakat-none { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+
         .btn-action {
             width: 35px; height: 35px; border-radius: 10px;
             display: inline-flex; align-items: center; justify-content: center;
@@ -105,6 +121,7 @@
                 <a href="/siswa/create" class="btn btn-tambah">
                     <i class="fas fa-user-plus"></i> Tambah Baru
                 </a>
+                
             </div>
         </div>
 
@@ -129,6 +146,7 @@
                         <th>L/P</th>
                         <th>Kelas</th>
                         <th>Jurusan</th>
+                        <th>Bakat Dominan</th>
                         <th style="text-align: right;">Aksi</th>
                     </tr>
                 </thead>
@@ -141,6 +159,28 @@
                         <td>{{ $s->jenis_kelamin }}</td>
                         <td><span class="badge-kelas">{{ $s->kelas }}</span></td>
                         <td>{{ $s->jurusan }}</td>
+                        <td>
+                            @php
+                                $bakat = $s->penilaian->bakat_dominan ?? '';
+                                $badgeClass = 'bakat-none';
+                                $bakatName = 'Belum Kalkulasi';
+                                
+                                if (str_contains($bakat, 'Akademik Umum')) {
+                                    $badgeClass = 'bakat-akademik-umum';
+                                    $bakatName = 'Akademik Umum';
+                                } elseif (str_contains($bakat, 'Akademik Spesifik')) {
+                                    $badgeClass = 'bakat-akademik-spesifik';
+                                    $bakatName = 'Akademik Spesifik';
+                                } elseif (str_contains($bakat, 'Kepemimpinan') || str_contains($bakat, 'Organisasi')) {
+                                    $badgeClass = 'bakat-kepemimpinan';
+                                    $bakatName = 'Kepemimpinan & Organisasi';
+                                } elseif (str_contains($bakat, 'Seni') || str_contains($bakat, 'Olahraga')) {
+                                    $badgeClass = 'bakat-seni-olahraga';
+                                    $bakatName = 'Seni & Olahraga';
+                                }
+                            @endphp
+                            <span class="badge-bakat {{ $badgeClass }}">{{ $bakatName }}</span>
+                        </td>
                         <td style="text-align: right;">
                             <a href="/siswa/edit/{{ $s->id }}" class="btn-action btn-edit" title="Edit Data"><i class="fas fa-edit"></i></a>
                             <a href="/siswa/delete/{{ $s->id }}" class="btn-action btn-hapus" title="Hapus Data" onclick="return confirm('Yakin hapus data siswa ini?')"><i class="fas fa-trash"></i></a>
@@ -158,7 +198,7 @@
         $(document).ready(function() {
             $('#tabelSiswa').DataTable({
                 "language": {
-                    "search": "Pencarian (Nama/Kelas/Jurusan):",
+                    "search": "Pencarian (Nama/Kelas/Jurusan/Bakat):",
                     "lengthMenu": "Tampilkan _MENU_ data per halaman",
                     "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ siswa",
                     "infoEmpty": "Tidak ada data siswa",

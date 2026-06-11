@@ -231,6 +231,7 @@
 
                 <div class="menu-label">Laporan & Keputusan</div>
                 <a href="/admin/publikasi" class="menu-item"><i class="fa-solid fa-stamp"></i> Publikasi Siswa Berprestasi</a>
+                <a href="/hasil-bakat" class="menu-item {{ request()->is('hasil-bakat*') ? 'active' : '' }}"><i class="fa-solid fa-brain"></i> Analisis Bakat Siswa</a>
                 <a href="/laporan" class="menu-item"><i class="fa-solid fa-file-pdf"></i> Laporan Sistem</a>
 
             @elseif($user->akses_role == 'guru')

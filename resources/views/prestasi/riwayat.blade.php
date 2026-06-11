@@ -9,12 +9,12 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
         :root {
-            --primary: #0f766e;
+            --primary: #43e6d0;
             --primary-light: #14b8a6;
-            --bg: #f8fafc;
-            --surface: #ffffff;
+            --bg: #f4f5f7;
+            --surface: #b3d9d5ef;
             --text: #0f172a;
-            --muted: #64748b;
+            --muted: #121314;
             --border: #e2e8f0;
         }
 
@@ -83,6 +83,7 @@
             <div class="page-actions">
                 <a href="/dashboard" class="btn btn-secondary"><i class="fas fa-house"></i> Dashboard</a>
                 <a href="/prestasi/create" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Tambah Prestasi</a>
+                
             </div>
         </div>
 
