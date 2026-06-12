@@ -8,6 +8,7 @@ use App\Models\Notification;
 
 class PrestasiController extends Controller
 {
+    //menampilkan daftar prestasi, jika siswa hanya menampilkan prestasi miliknya sendiri, jika admin/wakil kesiswaan menampilkan semua prestasi
     public function index()
     {
         $user = auth()->user();
@@ -25,7 +26,7 @@ class PrestasiController extends Controller
         
         return view('prestasi.index', compact('prestasi'));
     }
-
+//menampilkan form tambah prestasi
     public function create()
     {
         $user = auth()->user();
@@ -37,8 +38,8 @@ class PrestasiController extends Controller
         $kategori_utama = \App\Models\KategoriPrestasi::whereNull('parent_id')->with('children')->get();
         return view('prestasi.create', compact('siswa', 'kategori_utama'));
     }
-
-    public function store(Request $request)
+//menyimpan prestasi baru, request artinya wajib diisi, jika tidak akan error, lalu request->validate untuk validasi data yang masuk, jika tidak sesuai dengan rules yang ditentukan maka akan error, lalu jika validasi berhasil maka data akan disimpan ke database
+    public function store(Request $request) 
     {
         if (auth()->user()->role == 'siswa') {
             $siswa_obj = \App\Models\Siswa::where('nis', auth()->user()->username)->first();
@@ -76,7 +77,7 @@ class PrestasiController extends Controller
         // Handle Upload Sertifikat
         if ($request->hasFile('sertifikat')) {
             $file = $request->file('sertifikat');
-            $filename = time() . '_' . $file->getClientOriginalName();
+            $filename = time() . '_' . $file->getClientOriginalName(); //rename file dengan timestamp agar unik
             $file->move(public_path('uploads/sertifikat'), $filename);
             $data['sertifikat'] = $filename;
         }
@@ -88,7 +89,7 @@ class PrestasiController extends Controller
             $data['status'] = 'disetujui';
         }
 
-        Prestasi::create($data);
+        Prestasi::create($data); // Simpan data prestasi ke database
 
         if ($request->action == 'add_more') {
             return redirect('/prestasi/create')->with('success', 'Data berhasil disimpan! Silakan masukkan prestasi berikutnya.');
@@ -97,7 +98,7 @@ class PrestasiController extends Controller
         return redirect('/prestasi')->with('success', 'Capaian prestasi berhasil diajukan! Menunggu verifikasi sekolah.');
     }
 
-    public function riwayat(Request $request)
+    public function riwayat(Request $request) // Menampilkan riwayat prestasi milik siswa yang sedang login
     {
         $user = auth()->user();
         if ($user->role !== 'siswa') {
@@ -118,12 +119,12 @@ class PrestasiController extends Controller
             $status = '';
         }
 
-        $my_prestasi = $prestasiQuery->get();
+        $my_prestasi = $prestasiQuery->get(); // Ambil data prestasi sesuai filter status
         $my_notifications = Notification::where('siswa_id', $siswa->id)->with('sender')->latest()->take(5)->get();
 
         return view('prestasi.riwayat', compact('my_prestasi', 'my_notifications', 'status', 'siswa'));
     }
-
+//verifikasi prestasi oleh wakil kesiswaan atau admin, request->status adalah status yang dipilih (disetujui/ditolak), request->keterangan adalah keterangan tambahan dari wakil kesiswaan atau admin, lalu data prestasi akan diupdate sesuai dengan id yang dipilih
     public function verifikasi(Request $request, $id)
     {
         if (!in_array(auth()->user()->akses_role, ['admin', 'wakasiswa'])) {

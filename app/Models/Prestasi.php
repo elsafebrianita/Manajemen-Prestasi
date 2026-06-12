@@ -35,21 +35,21 @@ class Prestasi extends Model
     {
         if ($this->kategori && ($this->kategori->id == 3 || $this->kategori->parent_id == 3)) {
             return match(strtolower(str_replace('_', ' ', $this->juara))) {
-                'ketua' => 95,
-                'wakil ketua' => 90,
-                'bendahara' => 88,
-                'sekretaris' => 85,
+                'ketua' => 90,
+                'wakil ketua' => 85,
+                'bendahara' => 80,
+                'sekretaris' => 80,
                 'anggota' => 75,
-                default => 75
+                default => 70
             };
         }
 
         $poin_dasar = match($this->tingkat) {
             'Internasional' => 100,
-            'Nasional' => 80,
-            'Provinsi' => 60,
-            'Kabupaten' => 40,
-            default => 20
+            'Nasional' => 90,
+            'Provinsi' => 80,
+            'Kabupaten' => 75,
+            default => 70
         };
 
         $bonus_juara = 0;
