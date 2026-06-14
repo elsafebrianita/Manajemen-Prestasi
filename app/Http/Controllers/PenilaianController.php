@@ -15,7 +15,7 @@ class PenilaianController extends Controller
     {
         // Ambil semua siswa dengan data penilaiannya
         $siswas = Siswa::with('penilaian')->get();
-        return view('penilaian.index', compact('siswas'));
+        return view('walikelas.penilaian.index', compact('siswas'));
     }
 
     public function rapor()
@@ -56,7 +56,7 @@ class PenilaianController extends Controller
         // Get student grades
         $nilaiSiswas = \App\Models\NilaiSiswa::with('guru')->where('siswa_id', $siswa->id)->get()->keyBy('mapel_id');
 
-        return view('penilaian.rapor', compact('siswa', 'penilaian', 'mapels', 'nilaiSiswas'));
+        return view('siswa.rapor', compact('siswa', 'penilaian', 'mapels', 'nilaiSiswas'));
     }
 
     public function create($siswa_id)
@@ -82,7 +82,7 @@ class PenilaianController extends Controller
                 $q->where('id', 3)->orWhere('parent_id', 3);
             })->get();
 
-        return view('penilaian.create', compact(
+        return view('walikelas.penilaian.create', compact(
             'siswa', 'prestasi_akademik', 'prestasi_non', 'prestasi_organisasi', 'computed'
         ));
     }
@@ -209,7 +209,7 @@ class PenilaianController extends Controller
             return $b['total'] <=> $a['total'];
         });
 
-        return view('penilaian.perhitungan', compact(
+        return view('walikelas.penilaian.perhitungan', compact(
             'penilaians', 'targetA', 'targetB', 'targetC', 'targetD', 
             'dataKpi', 'wA', 'wB', 'wC', 'wD'
         ));
@@ -258,7 +258,7 @@ class PenilaianController extends Controller
             ];
         }
 
-        return view('penilaian.bakat', compact('hasilBakat', 'isSingle'));
+        return view('walikelas.penilaian.bakat', compact('hasilBakat', 'isSingle'));
     }
 
     public function destroy($id)
@@ -285,7 +285,7 @@ class PenilaianController extends Controller
         $prestasi_non = Prestasi::where('siswa_id', $id)->where('status', 'disetujui')
             ->whereHas('kategori', function($q){ $q->where('id', 4)->orWhere('parent_id', 4); })->get();
 
-        return view('penilaian.show', compact('siswa', 'prestasi_akademik', 'prestasi_non'));
+        return view('walikelas.penilaian.show', compact('siswa', 'prestasi_akademik', 'prestasi_non'));
     }
 
     public function settings()
@@ -295,7 +295,7 @@ class PenilaianController extends Controller
         }
 
         $settings = KpiSetting::all();
-        return view('penilaian.settings', compact('settings'));
+        return view('admin.penilaian.settings', compact('settings'));
     }
 
     public function updateSettings(Request $request)

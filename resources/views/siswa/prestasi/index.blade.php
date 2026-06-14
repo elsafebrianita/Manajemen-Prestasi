@@ -255,9 +255,10 @@
                                                         <input type="hidden" name="status" value="disetujui">
                                                         <button type="submit" style="background: #10b981; color: white; border: none; padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 10px; font-weight: 700;" title="ACC"><i class="fas fa-check"></i></button>
                                                     </form>
-                                                    <form action="/prestasi/verifikasi/{{ $p->id }}" method="POST">
+                                                    <form action="/prestasi/verifikasi/{{ $p->id }}" method="POST" onsubmit="return promptRejectReason(this);">
                                                         @csrf
                                                         <input type="hidden" name="status" value="ditolak">
+                                                        <input type="hidden" name="keterangan" class="reject-reason-input">
                                                         <button type="submit" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 10px; font-weight: 700;" title="Tolak"><i class="fas fa-times"></i></button>
                                                     </form>
                                                 @endif
@@ -284,5 +285,15 @@
             @endforelse
         </div>
     </div>
+    <script>
+        function promptRejectReason(form) {
+            let reason = prompt("Masukkan alasan penolakan pengajuan prestasi ini:");
+            if (reason === null) {
+                return false; // Batal submit jika user klik Batal/Cancel
+            }
+            form.querySelector('.reject-reason-input').value = reason;
+            return true;
+        }
+    </script>
 </body>
 </html>

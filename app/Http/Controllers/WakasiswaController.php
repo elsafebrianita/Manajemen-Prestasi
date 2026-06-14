@@ -100,12 +100,12 @@ class WakasiswaController extends Controller
         // Buat notifikasi ke siswa
         $pesan = $request->status == 'disetujui' 
             ? "Selamat! Prestasi '{$prestasi->nama_prestasi}' Anda telah disetujui."
-            : "Maaf, pengajuan prestasi '{$prestasi->nama_prestasi}' Anda ditolak. Keterangan: " . ($request->keterangan ?? '-');
+            : "Maaf, pengajuan prestasi '{$prestasi->nama_prestasi}' Anda ditolak. Keterangan: " . ($request->keterangan ?? '-') . ". Silakan ubah dan perbaiki data Anda agar dapat diajukan kembali.";
             
         Notification::create([
             'siswa_id' => $prestasi->siswa_id,
             'from_user_id' => auth()->user()->id,
-            'type' => $request->status == 'disetujui' ? 'Cukup Baik' : 'Pertahankan',
+            'type' => $request->status == 'disetujui' ? 'Pertahankan' : 'Ditolak',
             'message' => $pesan,
             'is_read' => false
         ]);

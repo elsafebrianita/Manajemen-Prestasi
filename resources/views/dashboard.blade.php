@@ -1011,6 +1011,41 @@
                     </div>
 
                     <div>
+                        <!-- REJECTED ACHIEVEMENTS WARNING BANNER -->
+                        @php
+                            $rejectedPrestasi = $my_prestasi->where('status', 'ditolak');
+                        @endphp
+                        @if($rejectedPrestasi->count() > 0)
+                            <div style="background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); border: 1px solid #fecdd3; border-left: 10px solid #e11d48; padding: 30px; border-radius: 30px; box-shadow: 0 10px 30px rgba(225, 29, 72, 0.05); margin-bottom: 30px;">
+                                <h3 style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; color: #9f1239; font-size: 18px; font-weight: 800;">
+                                    <i class="fas fa-exclamation-triangle" style="color: #e11d48;"></i> Pengajuan Prestasi Perlu Perbaikan
+                                </h3>
+                                <p style="color: #4c0519; font-size: 14px; margin-bottom: 20px; line-height: 1.6; font-weight: 500;">
+                                    Ada <strong>{{ $rejectedPrestasi->count() }}</strong> pengajuan prestasi Anda yang ditolak oleh sekolah dan perlu diperbaiki sebelum dapat divalidasi kembali. Silakan periksa catatan penolakan di bawah:
+                                </p>
+                                <div style="display: grid; gap: 15px; margin-bottom: 5px;">
+                                    @foreach($rejectedPrestasi as $rp)
+                                        <div style="background: white; border: 1px solid #ffe4e6; padding: 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
+                                            <div style="flex: 1; min-width: 250px;">
+                                                <div style="font-weight: 800; color: #881337; font-size: 14.5px;">{{ $rp->nama_prestasi }}</div>
+                                                <div style="font-size: 11px; color: #be123c; margin-top: 3px; font-weight: 600;">
+                                                    {{ $rp->tingkat }} • {{ $rp->juara }}
+                                                </div>
+                                                <div style="margin-top: 10px; padding: 12px; background: #fff5f5; border-radius: 12px; border-left: 4px solid #f43f5e; font-size: 12.5px; color: #e11d48; font-weight: 500; line-height: 1.5;">
+                                                    <i class="fas fa-comment-dots" style="margin-right: 6px;"></i><strong>Alasan Penolakan:</strong> {{ $rp->keterangan ?? 'Tidak ada keterangan tambahan.' }}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <a href="/prestasi/edit/{{ $rp->id }}" style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: white; background-color: #e11d48; padding: 10px 20px; border-radius: 12px; text-decoration: none; transition: 0.2s; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.2);" onmouseover="this.style.backgroundColor='#be123c'" onmouseout="this.style.backgroundColor='#e11d48'">
+                                                    <i class="fas fa-edit"></i> Perbaiki Data
+                                                </a>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
                         <!-- FEEDBACK SECTION -->
                         @if(isset($my_notifications) && $my_notifications->count() > 0)
                             <div style="background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 30px; border-left: 10px solid #f59e0b;">

@@ -152,7 +152,7 @@
                                 @forelse($my_prestasi as $p)
                                     <tr>
                                         <td>
-                                            <div style="font-weight: 700;">{{ $p->nama_prestasi }}</div>
+                                            <div style="font-weight: 700; color: {{ $p->status === 'ditolak' ? '#e11d48' : 'inherit' }}">{{ $p->nama_prestasi }}</div>
                                             <div class="small">
                                                 <span>{{ $p->juara }} / {{ $p->tingkat }}</span>
                                                 @if($p->lokasi)
@@ -160,6 +160,14 @@
                                                     <span><i class="fas fa-map-marker-alt" style="color: var(--primary); margin-right: 4px;"></i>{{ $p->lokasi }}</span>
                                                 @endif
                                             </div>
+                                            @if($p->status === 'ditolak')
+                                                <div style="margin-top: 10px; padding: 12px; background: #fff5f5; border: 1px solid #fee2e2; border-left: 4px solid #ef4444; border-radius: 10px; color: #b91c1c; font-size: 12.5px; font-weight: 500; line-height: 1.5; max-width: 500px;">
+                                                    <i class="fas fa-exclamation-circle" style="color: #ef4444; margin-right: 6px;"></i><strong>Catatan Penolakan:</strong> {{ $p->keterangan ?? 'Tidak ada keterangan tambahan.' }}
+                                                    <div style="margin-top: 8px;">
+                                                        <a href="/prestasi/edit/{{ $p->id }}" style="color: #b91c1c; font-weight: 800; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px;"><i class="fas fa-wrench"></i> Perbaiki & Ajukan Kembali</a>
+                                                    </div>
+                                                </div>
+                                            @endif
                                         </td>
                                         <td>{{ $p->kategori->nama_kategori ?? 'Umum' }}</td>
                                         <td>{{ $p->tanggal_capaian ? \Carbon\Carbon::parse($p->tanggal_capaian)->translatedFormat('Y') : '-' }}</td>

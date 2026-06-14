@@ -132,7 +132,7 @@ class NotifikasiController extends Controller
             }
         }
 
-        return view('notifikasi.create', compact('siswas', 'recent', 'classAnalysis'));
+        return view('admin.notifikasi.create', compact('siswas', 'recent', 'classAnalysis'));
     }
 
     // Kirim Notifikasi
@@ -169,7 +169,7 @@ class NotifikasiController extends Controller
         $totalPertahankan = $notifications->where('type', 'Pertahankan')->count();
         $totalTingkatkan  = $notifications->where('type', 'Perlu Ditingkatkan')->count();
 
-        return view('notifikasi.riwayat', compact('notifications', 'total', 'totalPertahankan', 'totalTingkatkan'));
+        return view('admin.notifikasi.riwayat', compact('notifications', 'total', 'totalPertahankan', 'totalTingkatkan'));
     }
 
     // Halaman Inbox Notifikasi Siswa
@@ -194,7 +194,7 @@ class NotifikasiController extends Controller
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
-        return view('notifikasi.siswa', compact('notifications', 'siswa'));
+        return view('siswa.notifikasi', compact('notifications', 'siswa'));
     }
 
     // Tandai Semua Notifikasi Sudah Dibaca

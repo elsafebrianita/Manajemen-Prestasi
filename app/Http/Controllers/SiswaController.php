@@ -103,13 +103,13 @@ class SiswaController extends Controller
         }
         
         $data = Siswa::with('penilaian')->get();
-        return view('siswa.index', compact('data'));
+        return view('admin.siswa.index', compact('data'));
     }
 
     public function create()
     {
         if (auth()->user()->role != 'admin') return redirect('/dashboard')->with('error', 'Akses ditolak.');
-        return view('siswa.create');
+        return view('admin.siswa.create');
     }
 
     public function store(Request $request)
@@ -126,7 +126,7 @@ class SiswaController extends Controller
     {
         if (auth()->user()->role != 'admin') return redirect('/dashboard')->with('error', 'Akses ditolak.');
         $siswa = Siswa::find($id);
-        return view('siswa.edit', compact('siswa'));
+        return view('admin.siswa.edit', compact('siswa'));
     }
 
     public function update(Request $request, $id)
@@ -171,7 +171,7 @@ class SiswaController extends Controller
     public function importForm()
     {
         if (auth()->user()->role != 'admin') return redirect('/dashboard')->with('error', 'Akses ditolak.');
-        return view('siswa.import');
+        return view('admin.siswa.import');
     }
 
     public function importExcel(Request $request)

@@ -24,7 +24,7 @@ class PrestasiController extends Controller
             $prestasi = Prestasi::with(['siswa', 'kategori'])->latest()->get();
         }
         
-        return view('prestasi.index', compact('prestasi'));
+        return view('siswa.prestasi.index', compact('prestasi'));
     }
 //menampilkan form tambah prestasi
     public function create()
@@ -36,7 +36,7 @@ class PrestasiController extends Controller
             $siswa = \App\Models\Siswa::all();
         }
         $kategori_utama = \App\Models\KategoriPrestasi::whereNull('parent_id')->with('children')->get();
-        return view('prestasi.create', compact('siswa', 'kategori_utama'));
+        return view('siswa.prestasi.create', compact('siswa', 'kategori_utama'));
     }
 //menyimpan prestasi baru, request artinya wajib diisi, jika tidak akan error, lalu request->validate untuk validasi data yang masuk, jika tidak sesuai dengan rules yang ditentukan maka akan error, lalu jika validasi berhasil maka data akan disimpan ke database
     public function store(Request $request) 
@@ -122,7 +122,7 @@ class PrestasiController extends Controller
         $my_prestasi = $prestasiQuery->get(); // Ambil data prestasi sesuai filter status
         $my_notifications = Notification::where('siswa_id', $siswa->id)->with('sender')->latest()->take(5)->get();
 
-        return view('prestasi.riwayat', compact('my_prestasi', 'my_notifications', 'status', 'siswa'));
+        return view('siswa.prestasi.riwayat', compact('my_prestasi', 'my_notifications', 'status', 'siswa'));
     }
 //verifikasi prestasi oleh wakil kesiswaan atau admin, request->status adalah status yang dipilih (disetujui/ditolak), request->keterangan adalah keterangan tambahan dari wakil kesiswaan atau admin, lalu data prestasi akan diupdate sesuai dengan id yang dipilih
     public function verifikasi(Request $request, $id)
@@ -139,6 +139,19 @@ class PrestasiController extends Controller
 
         // Auto-recalculate KPI for the student
         \App\Models\Penilaian::kalkulasiKpiSiswa($prestasi->siswa_id);
+
+        // Buat notifikasi ke siswa
+        $pesan = $request->status == 'disetujui' 
+            ? "Selamat! Prestasi '{$prestasi->nama_prestasi}' Anda telah disetujui."
+            : "Maaf, pengajuan prestasi '{$prestasi->nama_prestasi}' Anda ditolak. Keterangan: " . ($request->keterangan ?? '-') . ". Silakan ubah dan perbaiki data Anda agar dapat diajukan kembali.";
+            
+        Notification::create([
+            'siswa_id' => $prestasi->siswa_id,
+            'from_user_id' => auth()->user()->id,
+            'type' => $request->status == 'disetujui' ? 'Pertahankan' : 'Ditolak',
+            'message' => $pesan,
+            'is_read' => false
+        ]);
 
         return redirect()->back()->with('success', 'Status prestasi berhasil diperbarui!');
     }
@@ -159,7 +172,7 @@ class PrestasiController extends Controller
         }
         $kategori_utama = \App\Models\KategoriPrestasi::whereNull('parent_id')->with('children')->get();
         
-        return view('prestasi.edit', compact('prestasi', 'siswa', 'kategori_utama'));
+        return view('siswa.prestasi.edit', compact('prestasi', 'siswa', 'kategori_utama'));
     }
 
     public function update(Request $request, $id)

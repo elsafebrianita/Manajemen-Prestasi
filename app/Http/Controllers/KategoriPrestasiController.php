@@ -12,7 +12,7 @@ class KategoriPrestasiController extends Controller
     public function index()
     {
         $kategoris = KategoriPrestasi::all();
-        return view('kategori.index', compact('kategoris'));
+        return view('admin.kategori.index', compact('kategoris'));
     }
 
     // klik kategori → tampil prestasi
@@ -22,13 +22,13 @@ class KategoriPrestasiController extends Controller
 
         $jenis_prestasi = KategoriPrestasi::where('parent_id', $id)->get();
 
-        return view('kategori.show', compact('kategori', 'jenis_prestasi'));
+        return view('admin.kategori.show', compact('kategori', 'jenis_prestasi'));
     }
 
     // form tambah kategori
     public function create()
     {
-        return view('kategori.create');
+        return view('admin.kategori.create');
     }
 
     // simpan kategori baru

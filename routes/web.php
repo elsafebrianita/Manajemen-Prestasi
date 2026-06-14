@@ -12,7 +12,9 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\KepsekController;
 use App\Http\Controllers\UserVerificationController;
-use App\Http\Controllers\AcademicController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\GuruController;
+use App\Http\Controllers\WaliKelasController;
 use App\Http\Controllers\WakasiswaController;
 use App\Http\Controllers\GuruBkController;
 
@@ -123,58 +125,58 @@ Route::middleware(['auth'])->group(function () {
     // ==========================================
     
     // Admin - Manage Guru
-    Route::get('/admin/guru', [AcademicController::class, 'adminGuru']);
-    Route::post('/admin/guru/store', [AcademicController::class, 'storeGuru']);
-    Route::post('/admin/guru/import', [AcademicController::class, 'importGuru']);
-    Route::post('/admin/guru/update/{id}', [AcademicController::class, 'updateGuru']);
-    Route::get('/admin/guru/delete/{id}', [AcademicController::class, 'destroyGuru']);
+    Route::get('/admin/guru', [AdminController::class, 'adminGuru']);
+    Route::post('/admin/guru/store', [AdminController::class, 'storeGuru']);
+    Route::post('/admin/guru/import', [AdminController::class, 'importGuru']);
+    Route::post('/admin/guru/update/{id}', [AdminController::class, 'updateGuru']);
+    Route::get('/admin/guru/delete/{id}', [AdminController::class, 'destroyGuru']);
 
     // Admin - Manage Kelas
-    Route::get('/admin/kelas', [AcademicController::class, 'adminKelas']);
-    Route::post('/admin/kelas/store', [AcademicController::class, 'storeKelas']);
-    Route::post('/admin/kelas/update/{id}', [AcademicController::class, 'updateKelas']);
-    Route::post('/admin/kelas/assign-walikelas/{id}', [AcademicController::class, 'assignWaliKelas']);
-    Route::get('/admin/kelas/delete/{id}', [AcademicController::class, 'destroyKelas']);
+    Route::get('/admin/kelas', [AdminController::class, 'adminKelas']);
+    Route::post('/admin/kelas/store', [AdminController::class, 'storeKelas']);
+    Route::post('/admin/kelas/update/{id}', [AdminController::class, 'updateKelas']);
+    Route::post('/admin/kelas/assign-walikelas/{id}', [AdminController::class, 'assignWaliKelas']);
+    Route::get('/admin/kelas/delete/{id}', [AdminController::class, 'destroyKelas']);
 
     // Admin - Manage Mapel
-    Route::get('/admin/mapel', [AcademicController::class, 'adminMapel']);
-    Route::post('/admin/mapel/store', [AcademicController::class, 'storeMapel']);
-    Route::post('/admin/mapel/update/{id}', [AcademicController::class, 'updateMapel']);
-    Route::get('/admin/mapel/delete/{id}', [AcademicController::class, 'destroyMapel']);
+    Route::get('/admin/mapel', [AdminController::class, 'adminMapel']);
+    Route::post('/admin/mapel/store', [AdminController::class, 'storeMapel']);
+    Route::post('/admin/mapel/update/{id}', [AdminController::class, 'updateMapel']);
+    Route::get('/admin/mapel/delete/{id}', [AdminController::class, 'destroyMapel']);
 
     // Admin - Manage Relasi Guru & Mapel
-    Route::get('/admin/relasi', [AcademicController::class, 'adminRelasi']);
-    Route::post('/admin/relasi/store', [AcademicController::class, 'storeRelasi']);
-    Route::get('/admin/relasi/delete/{id}', [AcademicController::class, 'destroyRelasi']);
+    Route::get('/admin/relasi', [AdminController::class, 'adminRelasi']);
+    Route::post('/admin/relasi/store', [AdminController::class, 'storeRelasi']);
+    Route::get('/admin/relasi/delete/{id}', [AdminController::class, 'destroyRelasi']);
 
     // Admin - Manage Users
-    Route::get('/admin/user', [AcademicController::class, 'adminUser']);
-    Route::post('/admin/user/store', [AcademicController::class, 'storeUser']);
-    Route::post('/admin/user/update/{id}', [AcademicController::class, 'updateUser']);
-    Route::get('/admin/user/delete/{id}', [AcademicController::class, 'destroyUser']);
+    Route::get('/admin/user', [AdminController::class, 'adminUser']);
+    Route::post('/admin/user/store', [AdminController::class, 'storeUser']);
+    Route::post('/admin/user/update/{id}', [AdminController::class, 'updateUser']);
+    Route::get('/admin/user/delete/{id}', [AdminController::class, 'destroyUser']);
 
     // GURU MATA PELAJARAN
-    Route::get('/guru/mapel', [AcademicController::class, 'guruMapelSaya']);
-    Route::get('/guru/kelas', [AcademicController::class, 'guruKelasDiajar']);
-    Route::get('/guru/siswa', [AcademicController::class, 'guruSiswa']);
-    Route::get('/guru/nilai', [AcademicController::class, 'guruInputNilai']);
-    Route::post('/guru/nilai/store', [AcademicController::class, 'guruStoreNilai']);
+    Route::get('/guru/mapel', [GuruController::class, 'guruMapelSaya']);
+    Route::get('/guru/kelas', [GuruController::class, 'guruKelasDiajar']);
+    Route::get('/guru/siswa', [GuruController::class, 'guruSiswa']);
+    Route::get('/guru/nilai', [GuruController::class, 'guruInputNilai']);
+    Route::post('/guru/nilai/store', [GuruController::class, 'guruStoreNilai']);
 
     // WALI KELAS
-    Route::get('/walikelas/siswa', [AcademicController::class, 'walikelasSiswa']);
-    Route::get('/walikelas/kpi', [AcademicController::class, 'walikelasKpi']);
-    Route::post('/walikelas/kpi/kalkulasi', [AcademicController::class, 'walikelasKalkulasiKpi']);
-    Route::post('/walikelas/kpi/rekomendasi/{id}', [AcademicController::class, 'walikelasRekomendasiKpi']);
-    Route::get('/walikelas/evaluasi', [AcademicController::class, 'walikelasEvaluasi']);
-    Route::get('/walikelas/grafik', [AcademicController::class, 'walikelasGrafik']);
-    Route::get('/walikelas/rapor', [AcademicController::class, 'walikelasRapor']);
-    Route::post('/walikelas/rapor/finalisasi', [AcademicController::class, 'walikelasFinalisasiRapor']);
-    Route::get('/walikelas/rata-nilai', [AcademicController::class, 'walikelasRataNilai']);
-    Route::get('/walikelas/prestasi-siswa', [AcademicController::class, 'walikelasPrestasiSiswa']);
-    Route::get('/walikelas/siswa/{siswa_id}/rapor', [AcademicController::class, 'walikelasSiswaRapor']);
-    Route::get('/walikelas/siswa/{siswa_id}/nilai/edit', [AcademicController::class, 'walikelasEditNilai']);
-    Route::post('/walikelas/siswa/{siswa_id}/nilai/update', [AcademicController::class, 'walikelasUpdateNilai']);
-    Route::post('/walikelas/siswa/{siswa_id}/nilai/delete', [AcademicController::class, 'walikelasDeleteNilai']);
+    Route::get('/walikelas/siswa', [WaliKelasController::class, 'walikelasSiswa']);
+    Route::get('/walikelas/kpi', [WaliKelasController::class, 'walikelasKpi']);
+    Route::post('/walikelas/kpi/kalkulasi', [WaliKelasController::class, 'walikelasKalkulasiKpi']);
+    Route::post('/walikelas/kpi/rekomendasi/{id}', [WaliKelasController::class, 'walikelasRekomendasiKpi']);
+    Route::get('/walikelas/evaluasi', [WaliKelasController::class, 'walikelasEvaluasi']);
+    Route::get('/walikelas/grafik', [WaliKelasController::class, 'walikelasGrafik']);
+    Route::get('/walikelas/rapor', [WaliKelasController::class, 'walikelasRapor']);
+    Route::post('/walikelas/rapor/finalisasi', [WaliKelasController::class, 'walikelasFinalisasiRapor']);
+    Route::get('/walikelas/rata-nilai', [WaliKelasController::class, 'walikelasRataNilai']);
+    Route::get('/walikelas/prestasi-siswa', [WaliKelasController::class, 'walikelasPrestasiSiswa']);
+    Route::get('/walikelas/siswa/{siswa_id}/rapor', [WaliKelasController::class, 'walikelasSiswaRapor']);
+    Route::get('/walikelas/siswa/{siswa_id}/nilai/edit', [WaliKelasController::class, 'walikelasEditNilai']);
+    Route::post('/walikelas/siswa/{siswa_id}/nilai/update', [WaliKelasController::class, 'walikelasUpdateNilai']);
+    Route::post('/walikelas/siswa/{siswa_id}/nilai/delete', [WaliKelasController::class, 'walikelasDeleteNilai']);
 
     // WAKIL KESISWAAN
     Route::get('/wakasiswa/validasi', [WakasiswaController::class, 'validasi']);
