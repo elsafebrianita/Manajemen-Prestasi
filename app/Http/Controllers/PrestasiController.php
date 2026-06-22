@@ -242,4 +242,11 @@ class PrestasiController extends Controller
         
         return redirect('/prestasi')->with('success', 'Data prestasi telah dihapus.');
     }
+
+    public function showDetailSiswa($id)
+    {
+        $prestasi = Prestasi::findOrFail($id);
+    return view('siswa.prestasi.detail', compact('prestasi'));
+    }
+    
 }

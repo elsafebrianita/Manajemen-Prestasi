@@ -183,6 +183,7 @@
                                 <div style="display: flex; gap: 6px;">
                                     <button onclick="openModal({{ $p->id }}, '{{ $p->siswa->nama }}', 'layak')" style="background: #f0fdf4; color: #16a34a; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">✅ Layak</button>
                                     <button onclick="openModal({{ $p->id }}, '{{ $p->siswa->nama }}', 'tidak_layak')" style="background: #fef2f2; color: #dc2626; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">❌ Tolak</button>
+                                   
                                 </div>
                             @else
                                 <span style="background: #f8fafc; color: #64748b; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; border: 1px solid #e2e8f0; display: inline-flex; align-items: center; gap: 4px;"><i class="fas fa-hourglass-half"></i> Menunggu Keputusan Kepsek</span>

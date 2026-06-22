@@ -122,6 +122,7 @@
                     <i class="fas fa-user-plus"></i> Tambah Baru
                 </a>
                 
+                
             </div>
         </div>
 
@@ -185,6 +186,7 @@
                             <a href="/siswa/edit/{{ $s->id }}" class="btn-action btn-edit" title="Edit Data"><i class="fas fa-edit"></i></a>
                             <a href="/siswa/delete/{{ $s->id }}" class="btn-action btn-hapus" title="Hapus Data" onclick="return confirm('Yakin hapus data siswa ini?')"><i class="fas fa-trash"></i></a>
                         </td>
+
                     </tr>
                     @endforeach
                 </tbody>

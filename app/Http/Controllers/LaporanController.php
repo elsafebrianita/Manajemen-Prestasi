@@ -28,6 +28,6 @@ class LaporanController extends Controller
             ];
         }
 
-        return view('admin.laporan.index', compact('rekap'));
+        return view('admin.laporan', compact('rekap'));
     }
 }
